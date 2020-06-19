@@ -6,76 +6,75 @@ I am aiming for a "Exceeds Expectations" grade.
 If I don't get this grade I would like to redo it.
 ******************************************/
 
-const pageHeader = document.getElementsByClassName('page-header');
+const allStudents = document.querySelector('.student-list').querySelectorAll('li');
+const totalStudents = allStudents.length;    // +++ 1x .length berekenen
 
+const studentsPerPage = 10;
+const totalPages = Math.ceil(totalStudents / studentsPerPage); // ~~~ niet 2x .length meer berekenen maar nieuwe const gebruiken
 
+// SHOWPAGE FUNCTION
+function showPage(pageIndex = 0) {
+  const buttons = document.querySelector('.pagination').querySelectorAll('li');
+  const totalButtons = buttons.length;
+  for (let b = 0; b < totalButtons; b++) {
+    const link = buttons[b].querySelector('a');
+    if (b === pageIndex) link.classList.add('active');
+    else link.classList.remove('active');
+  }
 
-const newDiv = document.createElement('div');                           // Create a new div element
-const allStudents = document.querySelector('.student-list').querySelectorAll('li'); // Get all the students
-const nodes = Array.from( allStudents );                                // Put all the students in an array
-const studentsPerPage = 10;                                             // Declare the wanted amount of students per page
-const totalPages = Math.ceil( allStudents.length / studentsPerPage );   // Get the page amount needed by deviding total students by studentsPerPage
-
-
-const pages = [];
-// For every 10 students create a chunk and push it to the pages variable
-const chunk = ( array, start, length ) => array.slice( start, length ); // Get all students and slice it in chunks
-for ( let i = 0; i < allStudents.length; i += studentsPerPage ) {       // Loop through all the students till there are no chunks of 10 left
-    pages.push( chunk ( nodes, i, i + studentsPerPage ) );              // Push chunks of 10 students to the empty array "pages"
+  for (let i = 0; i < totalStudents; i++) {
+    const rangeStart = pageIndex * studentsPerPage; // +++ index in array waar de page start
+    const rangeEnd = rangeStart + studentsPerPage-1; // +++ index in array waar de page end
+    const isOutCurrentRange = i < rangeStart || i > rangeEnd; // +++ boolean check of ie binnen range is
+    if (isOutCurrentRange) allStudents[i].style.display = 'none'; // ~~~ buiten range op none
+    else allStudents[i].style.display = 'block'; // ~~~ else op visible
+  }
 }
 
-// This function will show and hide students based on the page number
-const showPage = (pageNumber) => {
+// CREATE A PAGINATION LIST
+const page = document.querySelector('.page'); // ~ iets simpelere selector
+const div = document.createElement('div');
+div.classList.add('pagination');
 
-    nodes.forEach( element => element.style.display = 'none' );         // By default hide all the students
-    const studentIndex = pageNumber * studentsPerPage;                  // Get the current pages multiply by the students per page (10)
-    const nodesToShow = chunk( nodes, studentIndex, studentIndex + studentsPerPage ); // Get the correct chunk of students to show
-    nodesToShow.forEach(element => element.style.display = 'block');    // Show the correct students for the current page
+for (let i = 0; i < totalPages; i++) {
+  const li = document.createElement('li');
+  li.addEventListener('click', () => { showPage(i) });
+
+  const a = document.createElement('a');
+  a.innerHTML = i + 1;
+  a.href = '#'
+
+  div.appendChild(li).appendChild(a);
 }
 
-/* Create a button for all pages needed based on the results.
-**this is required for the Exceeds Expectations grade**/
-const appendPageLinks = () => {
+page.appendChild(div);
 
-    const pageDiv = document.getElementsByClassName('page');            // Get the page div element
-    pageDiv[0].appendChild(newDiv).classList.add('pagination')          // Append a new div to the page div and give it a class "pagination"
-    const paginationDiv = document.getElementsByClassName('pagination');// Get the newly created pagination div element
+showPage();
 
-    for ( let index = 0; index < pages.length; index ++ ) {             // Loop through all pages (chunks) and do the following:
 
-        const listItem = document.createElement("li");                  // Create a list element
-        paginationDiv[0].appendChild(listItem)                          // Append the li to the pagination div
-        listItem.innerHTML = `<a href="#">${index + 1}</a>`;            // Create an anchor in the li with the correct page number
+// CREATE A SEARCHBAR WITH BUTTON
+const searchBar = document.createElement('div');
+const pageHeaderDiv = document.querySelector('.page-header');
+const searchInput = document.createElement('input');
+pageHeaderDiv.appendChild(searchBar).classList.add('student-search');
+const searchBarDiv = document.querySelector('.student-search');
+const searchbarHTML =
+`       <input placeholder="Search for students...">
+        <button>Search</button>
+`
+searchBarDiv.innerHTML = searchbarHTML;
 
-        // Create a click function on the pagenumber that will show the correct student per page
-        listItem.addEventListener('click', () => {
-            showPage( index );
-        })
-    }
-
-    showPage(0);                                                        // By default show the first page
+function searchName(nameToSearch){
+  for(let i = 0; i < totalStudents; i++){
+    const currentStudent = allStudents[i];
+    const name = currentStudent.querySelector('h3').innerHTML;
+    currentStudent.style.display = name.includes(nameToSearch) ? 'block' : 'none';
+  }
 }
 
-appendPageLinks();
+const toSearch = document.getElementsByTagName('input')[0]; // input.value
+const searchButton = document.querySelector('button');
 
-
-
-// HTML STRUCTURE
-// <div class="student-search">
-//   <input placeholder="Search for students...">
-//   <button>Search</button>
-// </div>
-
-
-const toSearch = 'wadawdwd'; // input.value
-const allNames = nodes.map((node)=>node.querySelector('h3').innerHTML);
-const filteredNames = allNames.filter(name => name.includes(toSearch));
-console.log(filteredNames);
-
-
-/* When a search yields 0 results, a message is displayed on the page, informing the user that no results have been found.
-**this is required for the Exceeds Expectations grade**/
-
-if (filteredNames.length === 0) {
-    console.log('empty')
-}
+searchButton.addEventListener('click', () => {
+    searchName(toSearch.value)
+})
