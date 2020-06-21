@@ -6,75 +6,131 @@ I am aiming for a "Exceeds Expectations" grade.
 If I don't get this grade I would like to redo it.
 ******************************************/
 
-const allStudents = document.querySelector('.student-list').querySelectorAll('li');
-const totalStudents = allStudents.length;    // +++ 1x .length berekenen
+const studentsPerPage = 10;                                 // Set the amount of students per page
 
-const studentsPerPage = 10;
-const totalPages = Math.ceil(totalStudents / studentsPerPage); // ~~~ niet 2x .length meer berekenen maar nieuwe const gebruiken
+// Create some global selectors
+const page = document.querySelector('.page');               // Select .page
+const pageHeader = document.querySelector('.page-header');  // Select .page-header
+const list = document.querySelector('.student-list');       // Select .student-list
+const allStudents = list.querySelectorAll('li');            // Select all list items in .student-list
 
-// SHOWPAGE FUNCTION
-function showPage(pageIndex = 0) {
-  const buttons = document.querySelector('.pagination').querySelectorAll('li');
-  const totalButtons = buttons.length;
-  for (let b = 0; b < totalButtons; b++) {
-    const link = buttons[b].querySelector('a');
-    if (b === pageIndex) link.classList.add('active');
-    else link.classList.remove('active');
+
+// CREATESEARCH function
+/* Use unobtrusive JavaScript to append HTML for a search bar.
+**this is required for the Exceeds Expectations grade**/
+function createSearch() {
+
+    const div = document.createElement('div');              // Create a div
+    div.classList.add('student-search');                    // Add student-search class to the div
+    pageHeader.appendChild(div)                             // Put the created div in .page-header
+
+    const input = document.createElement('input');          // Create an input
+    input.type = 'text';                                    // Give the input a type text
+    input.placeholder = 'Search for a name...';             // Give the input a placeholder
+
+    const button = document.createElement('button');        // Create a button
+    button.textContent = 'Search';                          // Add the text 'Search'
+    const searchDiv =  document.querySelector('.student-search');  // Select .student-search
+
+    function searchName(nameToSearch) {
+        const searchResults = [];
+        for ( let i = 0; i < allStudents.length; i++ ) {    // Loop through all the students
+            const currentStudent = allStudents[i];
+            const name = currentStudent.querySelector('h3').innerHTML;  // Get the content of the h3 (name)
+            const found = name.includes(nameToSearch);      // If the name contains the value of the input push it to searchResults
+            if(found) searchResults.push(currentStudent);   // If the student was found push it to searchResults
+        }
+
+        render(searchResults);
+
+        /* When a search yields 0 results, a message is displayed on the page, informing the user that no results have been found.
+        **this is required for the Exceeds Expectations grade**/
+        if (searchResults.length === 0) {                   // If nothing found show error message
+            const p = document.createElement('p');          // Create a paragraph
+            p.classList.add('error-message');               // Add error-message class to the paragraph
+            p.textContent = 'No results have been found.';  // Add the text 'No results have been found.'
+            p.style.color = 'red';                          // Give the paragraph a red color
+            page.appendChild(p);                            // Put the created p in .page
+        }
   }
 
-  for (let i = 0; i < totalStudents; i++) {
-    const rangeStart = pageIndex * studentsPerPage; // +++ index in array waar de page start
-    const rangeEnd = rangeStart + studentsPerPage-1; // +++ index in array waar de page end
-    const isOutCurrentRange = i < rangeStart || i > rangeEnd; // +++ boolean check of ie binnen range is
-    if (isOutCurrentRange) allStudents[i].style.display = 'none'; // ~~~ buiten range op none
-    else allStudents[i].style.display = 'block'; // ~~~ else op visible
-  }
+  input.addEventListener( 'input', (e) => {
+    if (e.target.value === '') render(allStudents);         // When you clear the searchbar reload all the students
+    const errorMessage = document.querySelector('.error-message');
+    page.removeChild(errorMessage);                         // If the searchbar is cleared, remove the error message
+  })
+
+  button.addEventListener( 'click', () => {
+    searchName(input.value);                                // When the search button is clicked search on name
+  })
+
+  searchDiv.appendChild(input);                             // Add the input into the .student-search div
+  searchDiv.appendChild(button);                            // Add the button into the .student-search div
 }
 
-// CREATE A PAGINATION LIST
-const page = document.querySelector('.page'); // ~ iets simpelere selector
-const div = document.createElement('div');
-div.classList.add('pagination');
+// CREATEPAGINATION function
+/* Pagination links display based on how many search results are returned.
+**this is required for the Exceeds Expectations grade**/
+function createPagination(students) {
+    const div = document.createElement('div');              // Create a div
+    div.classList.add('pagination');                        // Add pagination class to the div
 
-for (let i = 0; i < totalPages; i++) {
-  const li = document.createElement('li');
-  li.addEventListener('click', () => { showPage(i) });
+    const totalPages = Math.ceil(students.length / studentsPerPage);  // Calculate the total pages needed
 
-  const a = document.createElement('a');
-  a.innerHTML = i + 1;
-  a.href = '#'
+    for (let i = 0; i < totalPages; i++) {                  // Loop through all
+        const li = document.createElement('li');            // Create a list item
+        li.addEventListener('click', () => {
+            showStudents(students, i)                       // By clicking on the page numbers, show the correct students for the page
+        });
 
-  div.appendChild(li).appendChild(a);
+        const a = document.createElement('a');              // Create an anchor
+        a.innerHTML = i + 1;                                // Set text to index + 1
+        a.href = '#'                                        // Set href to #
+
+        div.appendChild(li).appendChild(a);                 // Put the list in pagination and the anchor in the list
+    }
+    page.appendChild(div);                                  // Put the pagination div into the page div
 }
 
-page.appendChild(div);
+// SHOWSTUDENTS function
+function showStudents(students, index) {
+    for (let i = 0; i < allStudents.length; i++) {
+        allStudents[i].style.display = 'none';              // Hide all the students by default
+    }
 
-showPage();
+    const start = index * studentsPerPage;                  // Calculate the starting index
+    const end = start + studentsPerPage;                    // Calculate the ending index
 
+    for (let i = start; i < end && i < students.length; i++) {
+        students[i].style.display = 'block';                // Show the correct students for the page
+    }
 
-// CREATE A SEARCHBAR WITH BUTTON
-const searchBar = document.createElement('div');
-const pageHeaderDiv = document.querySelector('.page-header');
-const searchInput = document.createElement('input');
-pageHeaderDiv.appendChild(searchBar).classList.add('student-search');
-const searchBarDiv = document.querySelector('.student-search');
-const searchbarHTML =
-`       <input placeholder="Search for students...">
-        <button>Search</button>
-`
-searchBarDiv.innerHTML = searchbarHTML;
-
-function searchName(nameToSearch){
-  for(let i = 0; i < totalStudents; i++){
-    const currentStudent = allStudents[i];
-    const name = currentStudent.querySelector('h3').innerHTML;
-    currentStudent.style.display = name.includes(nameToSearch) ? 'block' : 'none';
-  }
+    const pagination = document.querySelector('.pagination');  // Select the .pagination div
+    if (pagination !== undefined && pagination !== null) {  // Run when pagination is not undefined or null
+        const buttons = pagination.querySelectorAll('li');  // Select the list items in .pagination div
+        for (let i = 0; i < buttons.length; i++) {
+            const link = buttons[i].querySelector('a');     // Select the anchor
+            if (i === index) link.classList.add('active');  // Add active class to the anchor on the current active page
+            else link.classList.remove('active');           // else remove the active class
+        }
+    }
 }
 
-const toSearch = document.getElementsByTagName('input')[0]; // input.value
-const searchButton = document.querySelector('button');
+// RENDER function
+function render(students) {
+  cleanup();
 
-searchButton.addEventListener('click', () => {
-    searchName(toSearch.value)
-})
+  // If the lenght of students is bigger than allowed per page run createPagination() function
+  showStudents(students, 0);
+}
+
+// CLEANUP function
+function cleanup() {
+  const pagination = document.querySelector('.pagination'); // Select the .pagination div
+  if (pagination !== undefined && pagination !== null) pagination.parentNode.removeChild(pagination);
+  // If not undefined or null remove the pagination div
+}
+
+createSearch();
+
+render(allStudents)
