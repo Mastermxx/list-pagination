@@ -14,6 +14,15 @@ const pageHeader = document.querySelector('.page-header');  // Select .page-head
 const list = document.querySelector('.student-list');       // Select .student-list
 const allStudents = list.querySelectorAll('li');            // Select all list items in .student-list
 
+// Create an error-message for the results
+const p = document.createElement('p');                      // Create a paragraph
+p.classList.add('error-message');                           // Add error-message class to the paragraph
+p.textContent = 'No results have been found.';              // Add the text 'No results have been found.'
+p.style.color = 'red';                                      // Give the paragraph a red color
+p.style.display = 'none';                                   // Give the paragraph a red color
+page.appendChild(p);                                        // Put the created p in .page
+const errorMessage = document.querySelector('.error-message'); // Select .error-message
+
 
 // CREATESEARCH function
 /* Use unobtrusive JavaScript to append HTML for a search bar.
@@ -43,21 +52,14 @@ function createSearch() {
 
         render(searchResults);
 
-        /* When a search yields 0 results, a message is displayed on the page, informing the user that no results have been found.
-        **this is required for the Exceeds Expectations grade**/
-        if (searchResults.length === 0) {                   // If nothing found show error message
-            const p = document.createElement('p');          // Create a paragraph
-            p.classList.add('error-message');               // Add error-message class to the paragraph
-            p.textContent = 'No results have been found.';  // Add the text 'No results have been found.'
-            p.style.color = 'red';                          // Give the paragraph a red color
-            page.appendChild(p);                            // Put the created p in .page
+        if (searchResults.length === 0) {
+            errorMessage.style.display = 'block';           // If nothing found show error message
         }
   }
 
   input.addEventListener( 'input', (e) => {
     if (e.target.value === '') render(allStudents);         // When you clear the searchbar reload all the students
-    const errorMessage = document.querySelector('.error-message');
-    page.removeChild(errorMessage);                         // If the searchbar is cleared, remove the error message
+    errorMessage.style.display = 'none';                    // If the searchbar is cleared, hide the error message
   })
 
   button.addEventListener( 'click', () => {
@@ -121,6 +123,8 @@ function render(students) {
   cleanup();
 
   // If the lenght of students is bigger than allowed per page run createPagination() function
+  if(students.length > studentsPerPage) createPagination(students);
+
   showStudents(students, 0);
 }
 
