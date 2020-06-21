@@ -15,12 +15,12 @@ const list = document.querySelector('.student-list');       // Select .student-l
 const allStudents = list.querySelectorAll('li');            // Select all list items in .student-list
 
 // Create an error-message for the results
-const errorMessage = document.createElement('p');                      // Create a paragraph
-errorMessage.classList.add('error-message');                           // Add error-message class to the paragraph
-errorMessage.textContent = 'No results have been found.';              // Add the text 'No results have been found.'
-errorMessage.style.color = 'red';                                      // Give the paragraph a red color
-errorMessage.style.display = 'none';                                   // Give the paragraph a red color
-page.appendChild(errorMessage);                                        // Put the created p in .page
+const errorMessage = document.createElement('p');           // Create a paragraph
+errorMessage.classList.add('error-message');                // Add error-message class to the paragraph
+errorMessage.textContent = 'No results have been found.';   // Add the text 'No results have been found.'
+errorMessage.style.color = 'red';                           // Give the paragraph a red color
+errorMessage.style.display = 'none';                        // Give the paragraph a red color
+page.appendChild(errorMessage);                             // Put the created p in .page
 
 
 // CREATESEARCH function
@@ -28,16 +28,16 @@ page.appendChild(errorMessage);                                        // Put th
 **this is required for the Exceeds Expectations grade**/
 function createSearch() {
 
-    const searchbar = document.createElement('div');              // Create a div
-    searchbar.classList.add('student-search');                    // Add student-search class to the div
-    pageHeader.appendChild(searchbar)                             // Put the created div in .page-header
+    const searchbar = document.createElement('div');        // Create a div
+    searchbar.classList.add('student-search');              // Add student-search class to the div
+    pageHeader.appendChild(searchbar)                       // Put the created div in .page-header
 
-    const searchField = document.createElement('input');          // Create an input
-    searchField.type = 'text';                                    // Give the input a type text
-    searchField.placeholder = 'Search for a name...';             // Give the input a placeholder
+    const searchField = document.createElement('input');    // Create an input
+    searchField.type = 'text';                              // Give the input a type text
+    searchField.placeholder = 'Search for a name...';       // Give the input a placeholder
 
-    const searchButton = document.createElement('button');        // Create a button
-    searchButton.textContent = 'Search';                          // Add the text 'Search'
+    const searchButton = document.createElement('button');  // Create a button
+    searchButton.textContent = 'Search';                    // Add the text 'Search'
 
     function searchName(nameToSearch) {
         const searchResults = [];
@@ -61,11 +61,11 @@ function createSearch() {
   })
 
   searchButton.addEventListener( 'click', () => {
-    searchName(searchField.value);                                // When the search button is clicked search on name
+    searchName(searchField.value);                          // When the search button is clicked search on name
   })
 
-  searchbar.appendChild(searchField);                             // Add the input into the .student-search div
-  searchbar.appendChild(searchButton);                            // Add the button into the .student-search div
+  searchbar.appendChild(searchField);                       // Add the input into the .student-search div
+  searchbar.appendChild(searchButton);                      // Add the button into the .student-search div
 }
 
 // CREATEPAGINATION function
@@ -129,8 +129,9 @@ function render(students) {
 // CLEANUP function
 function cleanup() {
   const pagination = document.querySelector('.pagination'); // Select the .pagination div
-  if (pagination !== undefined && pagination !== null) pagination.parentNode.removeChild(pagination);
+  
   // If not undefined or null remove the pagination div
+  if (pagination !== undefined && pagination !== null) pagination.parentNode.removeChild(pagination);
 }
 
 createSearch();
