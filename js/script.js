@@ -15,13 +15,12 @@ const list = document.querySelector('.student-list');       // Select .student-l
 const allStudents = list.querySelectorAll('li');            // Select all list items in .student-list
 
 // Create an error-message for the results
-const p = document.createElement('p');                      // Create a paragraph
-p.classList.add('error-message');                           // Add error-message class to the paragraph
-p.textContent = 'No results have been found.';              // Add the text 'No results have been found.'
-p.style.color = 'red';                                      // Give the paragraph a red color
-p.style.display = 'none';                                   // Give the paragraph a red color
-page.appendChild(p);                                        // Put the created p in .page
-const errorMessage = document.querySelector('.error-message'); // Select .error-message
+const errorMessage = document.createElement('p');                      // Create a paragraph
+errorMessage.classList.add('error-message');                           // Add error-message class to the paragraph
+errorMessage.textContent = 'No results have been found.';              // Add the text 'No results have been found.'
+errorMessage.style.color = 'red';                                      // Give the paragraph a red color
+errorMessage.style.display = 'none';                                   // Give the paragraph a red color
+page.appendChild(errorMessage);                                        // Put the created p in .page
 
 
 // CREATESEARCH function
@@ -29,17 +28,16 @@ const errorMessage = document.querySelector('.error-message'); // Select .error-
 **this is required for the Exceeds Expectations grade**/
 function createSearch() {
 
-    const div = document.createElement('div');              // Create a div
-    div.classList.add('student-search');                    // Add student-search class to the div
-    pageHeader.appendChild(div)                             // Put the created div in .page-header
+    const searchbar = document.createElement('div');              // Create a div
+    searchbar.classList.add('student-search');                    // Add student-search class to the div
+    pageHeader.appendChild(searchbar)                             // Put the created div in .page-header
 
-    const input = document.createElement('input');          // Create an input
-    input.type = 'text';                                    // Give the input a type text
-    input.placeholder = 'Search for a name...';             // Give the input a placeholder
+    const searchField = document.createElement('input');          // Create an input
+    searchField.type = 'text';                                    // Give the input a type text
+    searchField.placeholder = 'Search for a name...';             // Give the input a placeholder
 
-    const button = document.createElement('button');        // Create a button
-    button.textContent = 'Search';                          // Add the text 'Search'
-    const searchDiv =  document.querySelector('.student-search');  // Select .student-search
+    const searchButton = document.createElement('button');        // Create a button
+    searchButton.textContent = 'Search';                          // Add the text 'Search'
 
     function searchName(nameToSearch) {
         const searchResults = [];
@@ -47,7 +45,7 @@ function createSearch() {
             const currentStudent = allStudents[i];
             const name = currentStudent.querySelector('h3').innerHTML;  // Get the content of the h3 (name)
             const found = name.includes(nameToSearch);      // If the name contains the value of the input push it to searchResults
-            if(found) searchResults.push(currentStudent);   // If the student was found push it to searchResults
+            if(found) searchResults.push(currentStudent);
         }
 
         render(searchResults);
@@ -57,17 +55,17 @@ function createSearch() {
         }
   }
 
-  input.addEventListener( 'input', (e) => {
+  searchField.addEventListener( 'input', (e) => {
     if (e.target.value === '') render(allStudents);         // When you clear the searchbar reload all the students
     errorMessage.style.display = 'none';                    // If the searchbar is cleared, hide the error message
   })
 
-  button.addEventListener( 'click', () => {
-    searchName(input.value);                                // When the search button is clicked search on name
+  searchButton.addEventListener( 'click', () => {
+    searchName(searchField.value);                                // When the search button is clicked search on name
   })
 
-  searchDiv.appendChild(input);                             // Add the input into the .student-search div
-  searchDiv.appendChild(button);                            // Add the button into the .student-search div
+  searchbar.appendChild(searchField);                             // Add the input into the .student-search div
+  searchbar.appendChild(searchButton);                            // Add the button into the .student-search div
 }
 
 // CREATEPAGINATION function
